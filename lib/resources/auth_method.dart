@@ -1,8 +1,6 @@
 import 'dart:typed_data';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
 import 'package:instagram_clone/resources/storage_method.dart';
 
 class AuthMethod {
@@ -16,11 +14,11 @@ class AuthMethod {
     required String username,
     required Uint8List file,
   }) async {
-    String result = "Some error occured";
+    String result = "Some error occurred";
     try {
-      if (email.isNotEmpty ||
-          password.isNotEmpty ||
-          username.isNotEmpty ||
+      if (email.isNotEmpty &&  // Changed || to &&
+          password.isNotEmpty &&
+          username.isNotEmpty &&
           file != null) {
         // register user
         UserCredential cred = await _auth.createUserWithEmailAndPassword(
@@ -29,21 +27,25 @@ class AuthMethod {
         );
         print(cred.user!.uid);
 
-        Future<String> photoUrl = StorageMethod().uploadImageToStorage(
+        // Get photoUrl first
+        String photoUrl = await StorageMethod().uploadImageToStorage(
           'profilePictures',
           file,
           false,
         );
+
         // add user to database
         await _firestore.collection('users').doc(cred.user!.uid).set({
-          'usernmae': username,
+          'username': username,  // Fixed typo in 'username'
           'uid': cred.user!.uid,
           'email': email,
           'followers': [],
           'following': [],
-          'photoUrl': photoUrl,
+          'photoUrl': photoUrl,  // Now storing actual String URL
         });
-        result = 'sucess';
+        result = 'success';  // Fixed typo in 'success'
+      } else {
+        result = "Please enter all the fields";
       }
     } catch (error) {
       result = error.toString();

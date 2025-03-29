@@ -112,6 +112,7 @@ class _SignUpPageState extends State<SignUp> {
 
               // button for login
               InkWell(
+                // In the onTap of InkWell:
                 onTap: () async {
                   String res = await AuthMethod().signUpUser(
                     email: _emailController.text,
@@ -119,6 +120,12 @@ class _SignUpPageState extends State<SignUp> {
                     username: _userController.text,
                     file: _image!,
                   );
+
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(
+                      context,
+                    ).showSnackBar(SnackBar(content: Text(res)));
+                  }
                 },
                 child: Container(
                   width: double.infinity,
